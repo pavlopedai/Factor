@@ -10,24 +10,34 @@ import XCTest
 @testable import Factor
 
 class FactorTests: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    private var performanceTestValue = 555555555555
+    private var testDataSuite = ["3": "[3]",
+                                 "45": "[3, 3, 5]",
+                                 "210": "[2, 3, 5, 7]",
+                                 "256": "[2, 2, 2, 2, 2, 2, 2, 2]",
+                                 "555555555555": "[3, 5, 7, 11, 13, 37, 101, 9901]"]
+    func testRecursive() {
+        for item in testDataSuite.enumerated() {
+            let result = Factor.factorRecursive(value: Int(item.element.key)!)
+            XCTAssertEqual(item.element.value, "\(result)", "Incorrect output for value: \(item.element.key). Expected: \(item.element.value). Actual: \(result)")
+        }
     }
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func testRegular() {
+        for item in testDataSuite.enumerated() {
+            let result = Factor.factorRegular(value: Int(item.element.key)!)
+            XCTAssertEqual(item.element.value, "\(result)", "Incorrect output for value: \(item.element.key). Expected: \(item.element.value). Actual: \(result)")
+        }
     }
-
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
+    
+    func testRecursivePerformance() {
         self.measure {
-            // Put the code you want to measure the time of here.
+            _ = Factor.factorRecursive(value: performanceTestValue)
+        }
+    }
+    func testRegularPerformance() {
+        self.measure {
+            _ = Factor.factorRegular(value: performanceTestValue)
         }
     }
 

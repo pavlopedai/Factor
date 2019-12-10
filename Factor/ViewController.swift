@@ -7,14 +7,37 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class ViewController: UIViewController {
-
+    @IBOutlet weak var inputTextField: UITextField!
+    @IBOutlet weak var outputLabel: UILabel!
+    private let bag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        inputTextField
+            .rx
+            .text
+            .asObservable()
+            .throttle(1.0, scheduler: MainScheduler.instance)
+            .map({ (text) -> Int in
+                guard let value = text, let intValue = Int(value) else { return 0 }
+                return intValue
+            })
+            .map({ (value) -> String in
+                return "\(Factor.factorRecursive(value: value))"
+            })
+            .bind(to: outputLabel.rx.text)
+            .disposed(by: bag)
     }
-
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        inputTextField.becomeFirstResponder()
+    }
 }
 
